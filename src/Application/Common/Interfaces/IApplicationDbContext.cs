@@ -8,5 +8,9 @@ public interface IApplicationDbContext
 
     DbSet<TodoItem> TodoItems { get; }
 
+    DbSet<Link> Links { get; }
+
+    DbSet<LinkReferrer> LinkReferrers { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
