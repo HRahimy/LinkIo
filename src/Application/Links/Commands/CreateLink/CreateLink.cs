@@ -58,13 +58,9 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, LinkD
             : _mapper.Map<LinkDto>(entity);
     }
 
-    private bool IsUniqueConstraintViolation(DbUpdateException ex)
+    private static bool IsUniqueConstraintViolation(DbUpdateException ex)
     {
-        if (ex.InnerException is SqlException sqlException)
-        {
-            return sqlException.Number == 2627 || sqlException.Number == 2601;
-        }
-        return false;
+        return ex.InnerException is SqlException sqlException && (sqlException.Number == 2627 || sqlException.Number == 2601);
     }
 
     public static string GenerateRandomString(int length)
