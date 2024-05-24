@@ -7,6 +7,8 @@ public class LinkConfiguration : IEntityTypeConfiguration<Link>
 {
     public void Configure(EntityTypeBuilder<Link> builder)
     {
+        builder.HasIndex(x => x.ShortUrlCode)
+            .IsUnique();
         builder.Property(x => x.ClickCount)
             .HasDefaultValue(0);
     }
