@@ -6,6 +6,30 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/Links/red/{shortcode}": {
+      "get": {
+        "tags": [
+          "Links"
+        ],
+        "operationId": "RedirectShortUrl",
+        "parameters": [
+          {
+            "name": "shortcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/Links": {
       "post": {
         "tags": [
