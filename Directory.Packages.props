@@ -19,6 +19,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.1.4" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.2" />
@@ -35,6 +36,7 @@
     <PackageVersion Include="NUnit.Analyzers" Version="3.9.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageVersion Include="Respawn" Version="6.1.0" />
+    <PackageVersion Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageVersion Include="Testcontainers.MsSql" Version="3.6.0" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.40.0" />
     <PackageVersion Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
