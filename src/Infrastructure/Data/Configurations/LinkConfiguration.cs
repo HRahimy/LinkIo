@@ -11,7 +11,5 @@ public class LinkConfiguration : IEntityTypeConfiguration<Link>
             .HasMaxLength(15);
         builder.HasIndex(x => x.ShortUrlCode)
             .IsUnique();
-        builder.Property(x => x.ClickCount)
-            .HasDefaultValue(0);
     }
 }

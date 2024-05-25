@@ -35,12 +35,9 @@ public class GetRedirectUrlQueryHandler : IRequestHandler<GetRedirectUrlQuery, s
             Url = request.ReferrerUrl ?? string.Empty,
         };
 
-        linkEntity.ClickCount += 1;
-
-        _context.Links.Update(linkEntity);
         _context.LinkReferrers.Add(referrerEntity);
 
-        referrerEntity.AddDomainEvent(new LinkOpenedEvent(linkEntity, referrerEntity));
+        referrerEntity.AddDomainEvent(new LinkOpenedEvent(referrerEntity));
 
         await _context.SaveChangesAsync(cancellationToken);
 
