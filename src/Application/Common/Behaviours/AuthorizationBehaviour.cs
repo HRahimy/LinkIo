@@ -111,7 +111,11 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
                             throw new ForbiddenAccessException();
                         }
 
-                        var scopes = _user.ClaimsPrincipal.FindFirst(c => c.Type == "scope" && c.Issuer == requirement.Issuer)?.Value.Split(' ');
+                        //var scopes = _user.ClaimsPrincipal.FindFirst(c => c.Type == "scope" && c.Issuer == requirement.Issuer)?.Value.Split(' ');
+
+                        var scopes = _user.ClaimsPrincipal
+                            .FindAll(c => c.Type == "permissions" && c.Issuer == requirement.Issuer)?
+                            .Select(c => c.Value.Split(' ')[0]).ToArray();
 
                         if (scopes == null)
                         {

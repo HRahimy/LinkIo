@@ -1,12 +1,10 @@
 ﻿
 using LinkIo.Application.Common.Interfaces;
-using LinkIo.Application.Common.Security;
 using LinkIo.Domain.Entities;
 using LinkIo.Domain.Events;
 
 namespace LinkIo.Application.Links.Queries.GetRedirectUrl;
 
-[Authorize(Scope = "read:links")]
 public record GetRedirectUrlQuery : IRequest<string>
 {
     public required string ShortUrlCode { get; init; }
@@ -24,7 +22,7 @@ public class GetRedirectUrlQueryHandler : IRequestHandler<GetRedirectUrlQuery, s
     public async Task<string> Handle(GetRedirectUrlQuery request, CancellationToken cancellationToken)
     {
         var linkEntity = await _context.Links
-            .FirstAsync(e => e.ShortUrlCode == request.ShortUrlCode, cancellationToken);
+            .FirstOrDefaultAsync(e => e.ShortUrlCode == request.ShortUrlCode, cancellationToken);
 
         if (linkEntity == null)
         {
