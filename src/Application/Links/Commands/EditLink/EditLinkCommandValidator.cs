@@ -17,7 +17,8 @@ public class EditLinkCommandValidator : AbstractValidator<EditLinkCommand>
             .NotNull()
             .NotEmpty()
             .Length(15).WithMessage("ShortUrlCode must be exactly 15 characters")
-            .Must(BeAlphanumeric).WithMessage("ShortUrlCode can only contain letters and numbers");
+            .Must(BeAlphanumeric).WithMessage("ShortUrlCode can only contain letters and numbers")
+            .MustAsync(BeUniqueCode).WithMessage("ShortUrlCode must be unique");
     }
 
     public static bool BeAlphanumeric(string input)
@@ -30,5 +31,10 @@ public class EditLinkCommandValidator : AbstractValidator<EditLinkCommand>
     public async Task<bool> ExistWithId(int id, CancellationToken cancellationToken)
     {
         return await _context.Links.AnyAsync(l => l.Id == id, cancellationToken);
+    }
+
+    public async Task<bool> BeUniqueCode(string code, CancellationToken cancellationToken)
+    {
+        return await _context.Links.AnyAsync(e => e.ShortUrlCode != code, cancellationToken);
     }
 }
