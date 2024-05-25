@@ -16,8 +16,10 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface ILinksClient {
-    redirectShortUrl(shortcode: string): Observable<void>;
+    getLinks(pageNumber: number, pageSize: number): Observable<PaginatedListOfLinkDto>;
     createLink(command: CreateLinkCommand): Observable<LinkDto>;
+    getLinkDetails(id: number): Observable<LinkDetailsDto>;
+    redirectShortUrl(shortcode: string): Observable<void>;
 }
 
 @Injectable({
@@ -33,35 +35,41 @@ export class LinksClient implements ILinksClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    redirectShortUrl(shortcode: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/Links/red/{shortcode}";
-        if (shortcode === undefined || shortcode === null)
-            throw new Error("The parameter 'shortcode' must be defined.");
-        url_ = url_.replace("{shortcode}", encodeURIComponent("" + shortcode));
+    getLinks(pageNumber: number, pageSize: number): Observable<PaginatedListOfLinkDto> {
+        let url_ = this.baseUrl + "/api/Links?";
+        if (pageNumber === undefined || pageNumber === null)
+            throw new Error("The parameter 'pageNumber' must be defined and cannot be null.");
+        else
+            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === undefined || pageSize === null)
+            throw new Error("The parameter 'pageSize' must be defined and cannot be null.");
+        else
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processRedirectShortUrl(response_);
+            return this.processGetLinks(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processRedirectShortUrl(response_ as any);
+                    return this.processGetLinks(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<PaginatedListOfLinkDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<PaginatedListOfLinkDto>;
         }));
     }
 
-    protected processRedirectShortUrl(response: HttpResponseBase): Observable<void> {
+    protected processGetLinks(response: HttpResponseBase): Observable<PaginatedListOfLinkDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -70,7 +78,10 @@ export class LinksClient implements ILinksClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaginatedListOfLinkDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -123,6 +134,104 @@ export class LinksClient implements ILinksClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = LinkDto.fromJS(resultData200);
             return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getLinkDetails(id: number): Observable<LinkDetailsDto> {
+        let url_ = this.baseUrl + "/api/Links/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetLinkDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetLinkDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<LinkDetailsDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<LinkDetailsDto>;
+        }));
+    }
+
+    protected processGetLinkDetails(response: HttpResponseBase): Observable<LinkDetailsDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LinkDetailsDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    redirectShortUrl(shortcode: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/Links/red/{shortcode}";
+        if (shortcode === undefined || shortcode === null)
+            throw new Error("The parameter 'shortcode' must be defined.");
+        url_ = url_.replace("{shortcode}", encodeURIComponent("" + shortcode));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRedirectShortUrl(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRedirectShortUrl(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processRedirectShortUrl(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -710,11 +819,75 @@ export class WeatherForecastsClient implements IWeatherForecastsClient {
     }
 }
 
+export class PaginatedListOfLinkDto implements IPaginatedListOfLinkDto {
+    items?: LinkDto[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPaginatedListOfLinkDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(LinkDto.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PaginatedListOfLinkDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedListOfLinkDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data;
+    }
+}
+
+export interface IPaginatedListOfLinkDto {
+    items?: LinkDto[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+}
+
 export class LinkDto implements ILinkDto {
     id?: number;
     originalUrl?: string;
     shortUrlCode?: string;
-    clickCount?: string;
+    clickCount?: number;
 
     constructor(data?: ILinkDto) {
         if (data) {
@@ -755,7 +928,123 @@ export interface ILinkDto {
     id?: number;
     originalUrl?: string;
     shortUrlCode?: string;
-    clickCount?: string;
+    clickCount?: number;
+}
+
+export class LinkDetailsDto implements ILinkDetailsDto {
+    id?: number;
+    originalUrl?: string | undefined;
+    shortUrlCode?: string | undefined;
+    clickCount?: number;
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date;
+    lastModifiedBy?: string | undefined;
+    referrers?: LinkReferrerDto[] | undefined;
+
+    constructor(data?: ILinkDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.originalUrl = _data["originalUrl"];
+            this.shortUrlCode = _data["shortUrlCode"];
+            this.clickCount = _data["clickCount"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdBy = _data["createdBy"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
+            if (Array.isArray(_data["referrers"])) {
+                this.referrers = [] as any;
+                for (let item of _data["referrers"])
+                    this.referrers!.push(LinkReferrerDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): LinkDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LinkDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["originalUrl"] = this.originalUrl;
+        data["shortUrlCode"] = this.shortUrlCode;
+        data["clickCount"] = this.clickCount;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdBy"] = this.createdBy;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        if (Array.isArray(this.referrers)) {
+            data["referrers"] = [];
+            for (let item of this.referrers)
+                data["referrers"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ILinkDetailsDto {
+    id?: number;
+    originalUrl?: string | undefined;
+    shortUrlCode?: string | undefined;
+    clickCount?: number;
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date;
+    lastModifiedBy?: string | undefined;
+    referrers?: LinkReferrerDto[] | undefined;
+}
+
+export class LinkReferrerDto implements ILinkReferrerDto {
+    url?: string;
+    count?: number;
+
+    constructor(data?: ILinkReferrerDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.url = _data["url"];
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): LinkReferrerDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LinkReferrerDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["url"] = this.url;
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface ILinkReferrerDto {
+    url?: string;
+    count?: number;
 }
 
 export class CreateLinkCommand implements ICreateLinkCommand {
