@@ -22,12 +22,7 @@ public class GetRedirectUrlQueryHandler : IRequestHandler<GetRedirectUrlQuery, s
     public async Task<string> Handle(GetRedirectUrlQuery request, CancellationToken cancellationToken)
     {
         var linkEntity = await _context.Links
-            .FirstOrDefaultAsync(e => e.ShortUrlCode == request.ShortUrlCode, cancellationToken);
-
-        if (linkEntity == null)
-        {
-            throw new NotFoundException(request.ShortUrlCode, typeof(Link).Name);
-        }
+            .FirstAsync(e => e.ShortUrlCode == request.ShortUrlCode, cancellationToken);
 
         var referrerEntity = new LinkReferrer
         {
