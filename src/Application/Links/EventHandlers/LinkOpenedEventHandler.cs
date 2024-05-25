@@ -12,6 +12,8 @@ public class LinkOpenedEventHandler : INotificationHandler<LinkOpenedEvent>
 
     public Task Handle(LinkOpenedEvent notification, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("LinkIo Domain Event: {DomainEvent}", notification.GetType().Name);
+
+        return Task.CompletedTask;
     }
 }
