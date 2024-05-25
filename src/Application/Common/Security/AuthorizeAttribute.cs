@@ -20,4 +20,9 @@ public class AuthorizeAttribute : Attribute
     /// Gets or sets the policy name that determines access to the resource.
     /// </summary>
     public string Policy { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the scope name that determines access to the resource.
+    /// </summary>
+    public string Scope { get; set; } = string.Empty;
 }

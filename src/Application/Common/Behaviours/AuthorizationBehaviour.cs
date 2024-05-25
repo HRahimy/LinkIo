@@ -2,6 +2,9 @@
 using LinkIo.Application.Common.Exceptions;
 using LinkIo.Application.Common.Interfaces;
 using LinkIo.Application.Common.Security;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LinkIo.Application.Common.Behaviours;
 
@@ -9,18 +12,23 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
 {
     private readonly IUser _user;
     private readonly IIdentityService _identityService;
+    private readonly AuthorizationOptions _authorizationOptions;
 
     public AuthorizationBehaviour(
         IUser user,
-        IIdentityService identityService)
+        IIdentityService identityService,
+        IOptions<AuthorizationOptions> authorizationOptions
+        )
     {
         _user = user;
         _identityService = identityService;
+        _authorizationOptions = authorizationOptions.Value;
     }
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        var authorizeAttributes = request.GetType().GetCustomAttributes<AuthorizeAttribute>();
+        var authorizeAttributes = request.GetType().GetCustomAttributes<Security.AuthorizeAttribute>();
+
 
         if (authorizeAttributes.Any())
         {
@@ -64,6 +72,61 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
                 foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
                 {
                     var authorized = await _identityService.AuthorizeAsync(_user.Id, policy);
+
+                    if (!authorized)
+                    {
+                        throw new ForbiddenAccessException();
+                    }
+                }
+            }
+
+            //Scope-based authorization
+            var authorizeAttributesWithScopes = authorizeAttributes.Where(a => !string.IsNullOrWhiteSpace(a.Scope));
+            if (authorizeAttributesWithScopes.Any())
+            {
+                foreach (var scope in authorizeAttributesWithScopes.Select(a => a.Scope))
+                {
+                    var authorized = false;
+
+                    var scopeRequirements = _authorizationOptions.GetPolicy(scope)?
+                        .Requirements
+                        .Where(e => e.GetType() == typeof(HasScopeRequirement))
+                        .Select(x => x as HasScopeRequirement)
+                        .ToList() ?? [];
+
+                    if (scopeRequirements.IsNullOrEmpty()) authorized = true;
+
+                    foreach (var requirement in scopeRequirements)
+                    {
+                        if (requirement == null)
+                        {
+                            authorized = true;
+                            continue;
+                        }
+
+                        if (_user.ClaimsPrincipal == null
+                            || !_user.ClaimsPrincipal!.HasClaim(c => c.Type == "scope" && c.Issuer == requirement.Issuer)
+                            )
+                        {
+                            throw new ForbiddenAccessException();
+                        }
+
+                        var scopes = _user.ClaimsPrincipal.FindFirst(c => c.Type == "scope" && c.Issuer == requirement.Issuer)?.Value.Split(' ');
+
+                        if (scopes == null)
+                        {
+                            authorized = false;
+                            break;
+                        }
+
+                        if (scopes.Any(s => s == requirement.Scope))
+                        {
+                            authorized = true;
+                            continue;
+                        }
+
+
+                    }
 
                     if (!authorized)
                     {

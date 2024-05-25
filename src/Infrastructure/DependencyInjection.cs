@@ -1,12 +1,17 @@
-﻿using LinkIo.Application.Common.Interfaces;
+﻿using System.Security.Claims;
+using LinkIo.Application.Common.Interfaces;
+using LinkIo.Application.Common.Security;
 using LinkIo.Domain.Constants;
 using LinkIo.Infrastructure.Data;
 using LinkIo.Infrastructure.Data.Interceptors;
 using LinkIo.Infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -40,8 +45,23 @@ public static class DependencyInjection
         services.AddSingleton(TimeProvider.System);
         services.AddTransient<IIdentityService, IdentityService>();
 
-        services.AddAuthorization(options =>
-            options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
+        var domain = $"https://{configuration["Auth0:Domain"]}/";
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.Authority = domain;
+                options.Audience = configuration["Auth0:Audience"];
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = ClaimTypes.NameIdentifier
+                };
+            });
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator))
+            .AddPolicy("read:links", policy => policy.Requirements.Add(new HasScopeRequirement("read:links", domain)));
+
+        services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 
         return services;
     }
