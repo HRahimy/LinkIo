@@ -81,17 +81,17 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
             }
 
             //Scope-based authorization
-            var authorizeAttributesWithScopes = authorizeAttributes.Where(a => !string.IsNullOrWhiteSpace(a.Scope));
+            var authorizeAttributesWithScopes = authorizeAttributes.Where(a => !string.IsNullOrWhiteSpace(a.PermissionScope));
             if (authorizeAttributesWithScopes.Any())
             {
-                foreach (var scope in authorizeAttributesWithScopes.Select(a => a.Scope))
+                foreach (var scope in authorizeAttributesWithScopes.Select(a => a.PermissionScope))
                 {
                     var authorized = false;
 
                     var scopeRequirements = _authorizationOptions.GetPolicy(scope)?
                         .Requirements
-                        .Where(e => e.GetType() == typeof(HasScopeRequirement))
-                        .Select(x => x as HasScopeRequirement)
+                        .Where(e => e.GetType() == typeof(HasPermissionScopeRequirement))
+                        .Select(x => x as HasPermissionScopeRequirement)
                         .ToList() ?? [];
 
                     if (scopeRequirements.IsNullOrEmpty()) authorized = true;

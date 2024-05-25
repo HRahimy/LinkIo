@@ -22,7 +22,7 @@ public class AuthorizeAttribute : Attribute
     public string Policy { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the scope name that determines access to the resource.
+    /// Gets or sets the permission scope name that determines access to the resource.
     /// </summary>
-    public string Scope { get; set; } = string.Empty;
+    public string PermissionScope { get; set; } = string.Empty;
 }

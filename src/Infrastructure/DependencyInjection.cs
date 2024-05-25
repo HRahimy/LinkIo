@@ -6,7 +6,6 @@ using LinkIo.Infrastructure.Data;
 using LinkIo.Infrastructure.Data.Interceptors;
 using LinkIo.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -59,9 +58,7 @@ public static class DependencyInjection
 
         services.AddAuthorizationBuilder()
             .AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator))
-            .AddPolicy("read:links", policy => policy.Requirements.Add(new HasScopeRequirement("read:links", domain)));
-
-        services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+            .AddPolicy(Permissions.ReadLinks, policy => policy.Requirements.Add(new HasPermissionScopeRequirement(Permissions.ReadLinks, domain)));
 
         return services;
     }
