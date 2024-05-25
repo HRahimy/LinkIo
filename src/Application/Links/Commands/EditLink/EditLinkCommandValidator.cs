@@ -35,6 +35,6 @@ public class EditLinkCommandValidator : AbstractValidator<EditLinkCommand>
 
     public async Task<bool> BeUniqueCode(string code, CancellationToken cancellationToken)
     {
-        return await _context.Links.AnyAsync(e => e.ShortUrlCode != code, cancellationToken);
+        return await _context.Links.AllAsync(e => e.ShortUrlCode != code, cancellationToken);
     }
 }
