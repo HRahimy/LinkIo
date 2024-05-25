@@ -392,6 +392,9 @@
           },
           "shortUrlCode": {
             "type": "string"
+          },
+          "clickCount": {
+            "type": "string"
           }
         }
       },

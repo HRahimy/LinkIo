@@ -714,6 +714,7 @@ export class LinkDto implements ILinkDto {
     id?: number;
     originalUrl?: string;
     shortUrlCode?: string;
+    clickCount?: string;
 
     constructor(data?: ILinkDto) {
         if (data) {
@@ -729,6 +730,7 @@ export class LinkDto implements ILinkDto {
             this.id = _data["id"];
             this.originalUrl = _data["originalUrl"];
             this.shortUrlCode = _data["shortUrlCode"];
+            this.clickCount = _data["clickCount"];
         }
     }
 
@@ -744,6 +746,7 @@ export class LinkDto implements ILinkDto {
         data["id"] = this.id;
         data["originalUrl"] = this.originalUrl;
         data["shortUrlCode"] = this.shortUrlCode;
+        data["clickCount"] = this.clickCount;
         return data;
     }
 }
@@ -752,6 +755,7 @@ export interface ILinkDto {
     id?: number;
     originalUrl?: string;
     shortUrlCode?: string;
+    clickCount?: string;
 }
 
 export class CreateLinkCommand implements ICreateLinkCommand {
