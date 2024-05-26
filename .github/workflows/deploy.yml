@@ -24,10 +24,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: Remove dev config file
-        run: ls -R
+      # - name: Remove dev config file
+      #   run: ls -R
       - name: Add prod config file
-        run: echo ${{ secrets.ANGULAR_ENV }} | base64 -d > src/Web/ClientApp/environments/environment.ts
+        run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/environments/environment.ts'
+        shell: bash
+        env:
+          ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
       - name: Build And Deploy
         uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9
         with:
