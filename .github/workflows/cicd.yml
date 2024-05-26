@@ -15,15 +15,15 @@ permissions:
 
 jobs:
 
-  build:
-    uses: ./.github/workflows/build.yml
-    with:
-      build-artifacts: true
+  # build:
+  #   uses: ./.github/workflows/build.yml
+  #   with:
+  #     build-artifacts: true
       
   deploy:
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
-    needs: [ build ]
+    # needs: [ build ]
     with:
       environmentName: Production
       
