@@ -2,10 +2,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAuth0 } from '@auth0/auth0-angular';
+import { authInterceptor } from './shared/interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,6 +33,11 @@ import { provideAuth0 } from '@auth0/auth0-angular';
         scope: 'read:current_user',
       },
     }),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useValue: authInterceptor,
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent],
 })
