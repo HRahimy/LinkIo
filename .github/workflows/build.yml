@@ -52,21 +52,6 @@ jobs:
       
     - name: Test solution
       run: dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~AcceptanceTests"
-
-    - name: Build Angular app
-      if: ${{ inputs.build-artifacts == true }}
-      run: |
-        npm install
-        npm run build
-      working-directory: ./src/Web/ClientApp/
-
-    - name: Upload Angular app artifact
-      if: ${{ inputs.build-artifacts == true }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: angular_app
-        path: ./src/Web/ClientApp/dist/
-        if-no-files-found: error
     
     - name: Create EF Core migrations bundle - Install tool-manifest
       if: ${{ inputs.build-artifacts == true }}
