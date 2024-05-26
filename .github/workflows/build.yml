@@ -56,8 +56,8 @@ jobs:
     - name: Build Angular app
       if: ${{ inputs.build-artifacts == true }}
       run: |
-        npm ci --force
-        ng build
+        npm install
+        npm run build
       working-directory: ./src/Web/ClientApp/
 
     - name: Upload Angular app artifact
