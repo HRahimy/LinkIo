@@ -1,0 +1,15 @@
+.container {
+  height: 100vh;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+mat-form-field {
+  width: 50%;
+}
+
+button {
+  width: 50%;
+}
