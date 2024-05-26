@@ -7,18 +7,41 @@
       placeholder="https://example.link.com"
       [formControl]="urlInput"
     />
-    @if (urlInput.getRawValue().length === 0) {
+    @if(loading) {
+    <mat-spinner [diameter]="28" matSuffix></mat-spinner>
+    } @if(urlInput.hasError('required')) {
+    <mat-error>URL is <strong>required</strong></mat-error>
+    } @else if(urlInput.hasError('invalidUrl')) {
+    <mat-error>Invalid URL</mat-error>
+    } @if (urlInput.getRawValue().length === 0) {
     <mat-hint>Enter a URL to get short link</mat-hint>
     }
   </mat-form-field>
 
-  @if (shortUrl) {
-  <h3>{{ shortUrl }}</h3>
-  }
+  <button
+    mat-stroked-button
+    color="primary"
+    [disabled]="loading || !urlInput.valid"
+    (click)="submit()"
+  >
+    Get Link
+  </button>
 
-  <button mat-stroked-button color="primary" (click)="submit()">Submit</button>
+  @if (!loading && error) {
+  <mat-error>{{ error }}</mat-error>
+  } @if (shortUrl) {
+  <mat-hint>Success!</mat-hint>
+  <div class="code-container">
+    <pre>{{ shortUrl }}</pre>
+    <button mat-icon-button (click)="copyUrl()" matTooltip="Copy to clipboard">
+      <mat-icon>content_copy</mat-icon>
+    </button>
+  </div>
+  }
 
   <hr />
 
-  <button mat-flat-button color="primary" (click)="signIn()">Sign In</button>
+  <button mat-flat-button color="primary" (click)="signIn()">
+    Log in or Sign up
+  </button>
 </div>
