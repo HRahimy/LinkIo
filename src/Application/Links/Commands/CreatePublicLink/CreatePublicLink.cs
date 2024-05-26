@@ -6,12 +6,12 @@ using LinkIo.Domain.Entities;
 using LinkIo.Domain.Events;
 
 namespace LinkIo.Application.Links.Commands.CreateLink;
-public record CreateLinkCommand : IRequest<LinkDto>
+public record CreatePublicLinkCommand : IRequest<LinkDto>
 {
     public required string Url { get; init; }
 }
 
-public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, LinkDto>
+public class CreateLinkCommandHandler : IRequestHandler<CreatePublicLinkCommand, LinkDto>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -26,7 +26,7 @@ public class CreateLinkCommandHandler : IRequestHandler<CreateLinkCommand, LinkD
         _mapper = mapper;
     }
 
-    public async Task<LinkDto> Handle(CreateLinkCommand request, CancellationToken cancellationToken)
+    public async Task<LinkDto> Handle(CreatePublicLinkCommand request, CancellationToken cancellationToken)
     {
         var entity = new Link
         {

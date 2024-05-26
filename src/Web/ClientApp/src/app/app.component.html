@@ -1,3 +1,7 @@
 <body>
+  @if(loading) {
+  <mat-progress-spinner></mat-progress-spinner>
+  } @else {
   <router-outlet></router-outlet>
+  }
 </body>

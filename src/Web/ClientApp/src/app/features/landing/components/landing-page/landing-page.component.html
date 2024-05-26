@@ -1,8 +1,24 @@
 <div class="container">
+  <h1>Welcome to LinkIo</h1>
   <mat-form-field>
     <mat-label>URL</mat-label>
-    <input matInput placeholder="https://example.link.com" />
+    <input
+      matInput
+      placeholder="https://example.link.com"
+      [formControl]="urlInput"
+    />
+    @if (urlInput.getRawValue().length === 0) {
+    <mat-hint>Enter a URL to get short link</mat-hint>
+    }
   </mat-form-field>
 
-  <button mat-flat-button color="primary">Sign In</button>
+  @if (shortUrl) {
+  <h3>{{ shortUrl }}</h3>
+  }
+
+  <button mat-stroked-button color="primary" (click)="submit()">Submit</button>
+
+  <hr />
+
+  <button mat-flat-button color="primary" (click)="signIn()">Sign In</button>
 </div>

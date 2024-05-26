@@ -46,36 +46,6 @@
             }
           }
         }
-      },
-      "post": {
-        "tags": [
-          "Links"
-        ],
-        "operationId": "CreateLink",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateLinkCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LinkDto"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/Links/{id}": {
@@ -110,10 +80,42 @@
         }
       }
     },
-    "/api/Links/red/{shortcode}": {
+    "/api/PublicLinks": {
+      "post": {
+        "tags": [
+          "PublicLinks"
+        ],
+        "operationId": "CreateLink",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePublicLinkCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/short/{shortcode}": {
       "get": {
         "tags": [
-          "Links"
+          "short"
         ],
         "operationId": "RedirectShortUrl",
         "parameters": [
@@ -559,7 +561,7 @@
           }
         }
       },
-      "CreateLinkCommand": {
+      "CreatePublicLinkCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

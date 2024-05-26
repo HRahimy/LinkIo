@@ -5,6 +5,8 @@ import { LandingRoutingModule } from './landing-routing.module';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [LandingPageComponent],
@@ -13,6 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
     LandingRoutingModule,
     MatInputModule,
     MatButtonModule,
+    MatDividerModule,
+    ReactiveFormsModule
   ],
 })
 export class LandingModule {}

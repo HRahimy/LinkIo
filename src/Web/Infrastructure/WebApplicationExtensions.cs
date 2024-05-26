@@ -4,14 +4,19 @@ namespace LinkIo.Web.Infrastructure;
 
 public static class WebApplicationExtensions
 {
-    public static RouteGroupBuilder MapGroup(this WebApplication app, EndpointGroupBase group)
+    public static RouteGroupBuilder MapGroup(this WebApplication app, EndpointGroupBase group, string? overrideName = null)
     {
         var groupName = group.GetType().Name;
 
+        if (overrideName != null)
+        {
+            app.UsePathBase($"/{overrideName}");
+        }
+
         return app
-            .MapGroup($"/api/{groupName}")
-            .WithGroupName(groupName)
-            .WithTags(groupName)
+            .MapGroup(overrideName ?? $"/api/{groupName}")
+            .WithGroupName(overrideName ?? groupName)
+            .WithTags(overrideName ?? groupName)
             .WithOpenApi();
     }
 

@@ -2,11 +2,16 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import {
+  HttpClientModule,
+  provideHttpClient,
+  withInterceptors,
+} from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAuth0 } from '@auth0/auth0-angular';
 import { authInterceptor } from './shared/interceptors/auth.interceptor';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,6 +27,7 @@ import { authInterceptor } from './shared/interceptors/auth.interceptor';
       },
     ]),
     BrowserAnimationsModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     provideAuth0({
@@ -33,11 +39,7 @@ import { authInterceptor } from './shared/interceptors/auth.interceptor';
         scope: 'read:current_user',
       },
     }),
-    {
-      provide: HTTP_INTERCEPTORS,
-      useValue: authInterceptor,
-      multi: true,
-    },
+    provideHttpClient(withInterceptors([authInterceptor])),
   ],
   bootstrap: [AppComponent],
 })

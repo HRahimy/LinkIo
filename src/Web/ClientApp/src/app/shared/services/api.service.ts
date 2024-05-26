@@ -17,9 +17,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface ILinksClient {
     getLinks(pageNumber: number, pageSize: number): Observable<PaginatedListOfLinkDto>;
-    createLink(command: CreateLinkCommand): Observable<LinkDto>;
     getLinkDetails(id: number): Observable<LinkDetailsDto>;
-    redirectShortUrl(shortcode: string): Observable<void>;
 }
 
 @Injectable({
@@ -91,58 +89,6 @@ export class LinksClient implements ILinksClient {
         return _observableOf(null as any);
     }
 
-    createLink(command: CreateLinkCommand): Observable<LinkDto> {
-        let url_ = this.baseUrl + "/api/Links";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateLink(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCreateLink(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<LinkDto>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<LinkDto>;
-        }));
-    }
-
-    protected processCreateLink(response: HttpResponseBase): Observable<LinkDto> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = LinkDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
     getLinkDetails(id: number): Observable<LinkDetailsDto> {
         let url_ = this.baseUrl + "/api/Links/{id}";
         if (id === undefined || id === null)
@@ -193,9 +139,97 @@ export class LinksClient implements ILinksClient {
         }
         return _observableOf(null as any);
     }
+}
+
+export interface IPublicLinksClient {
+    createLink(command: CreatePublicLinkCommand): Observable<LinkDto>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class PublicLinksClient implements IPublicLinksClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    createLink(command: CreatePublicLinkCommand): Observable<LinkDto> {
+        let url_ = this.baseUrl + "/api/PublicLinks";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateLink(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateLink(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<LinkDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<LinkDto>;
+        }));
+    }
+
+    protected processCreateLink(response: HttpResponseBase): Observable<LinkDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LinkDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export interface IShortClient {
+    redirectShortUrl(shortcode: string): Observable<void>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ShortClient implements IShortClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
 
     redirectShortUrl(shortcode: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/Links/red/{shortcode}";
+        let url_ = this.baseUrl + "/short/{shortcode}";
         if (shortcode === undefined || shortcode === null)
             throw new Error("The parameter 'shortcode' must be defined.");
         url_ = url_.replace("{shortcode}", encodeURIComponent("" + shortcode));
@@ -1047,10 +1081,10 @@ export interface ILinkReferrerDto {
     count?: number;
 }
 
-export class CreateLinkCommand implements ICreateLinkCommand {
+export class CreatePublicLinkCommand implements ICreatePublicLinkCommand {
     url?: string;
 
-    constructor(data?: ICreateLinkCommand) {
+    constructor(data?: ICreatePublicLinkCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1065,9 +1099,9 @@ export class CreateLinkCommand implements ICreateLinkCommand {
         }
     }
 
-    static fromJS(data: any): CreateLinkCommand {
+    static fromJS(data: any): CreatePublicLinkCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateLinkCommand();
+        let result = new CreatePublicLinkCommand();
         result.init(data);
         return result;
     }
@@ -1079,7 +1113,7 @@ export class CreateLinkCommand implements ICreateLinkCommand {
     }
 }
 
-export interface ICreateLinkCommand {
+export interface ICreatePublicLinkCommand {
     url?: string;
 }
 
