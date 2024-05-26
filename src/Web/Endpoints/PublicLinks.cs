@@ -10,7 +10,7 @@ public class PublicLinks : EndpointGroupBase
     public override void Map(WebApplication app)
     {
         app.MapGroup(this)
-            .MapPost(CreateLink);
+            .MapPost(CreatePublicLink);
 
         app.MapGroup(this, "short")
             .MapGet(RedirectShortUrl, "{shortcode}");
@@ -23,7 +23,7 @@ public class PublicLinks : EndpointGroupBase
         return Results.Redirect(result);
     }
 
-    public Task<LinkDto> CreateLink(ISender sender, CreatePublicLinkCommand command)
+    public Task<LinkDto> CreatePublicLink(ISender sender, CreateLinkCommand command)
     {
         return sender.Send(command);
     }

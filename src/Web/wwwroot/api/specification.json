@@ -46,6 +46,36 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "Links"
+        ],
+        "operationId": "CreateLink",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLinkCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkDto"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/Links/{id}": {
@@ -85,13 +115,13 @@
         "tags": [
           "PublicLinks"
         ],
-        "operationId": "CreateLink",
+        "operationId": "CreatePublicLink",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreatePublicLinkCommand"
+                "$ref": "#/components/schemas/CreateLinkCommand"
               }
             }
           },
@@ -561,7 +591,7 @@
           }
         }
       },
-      "CreatePublicLinkCommand": {
+      "CreateLinkCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

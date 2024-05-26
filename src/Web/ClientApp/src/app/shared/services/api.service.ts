@@ -17,6 +17,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface ILinksClient {
     getLinks(pageNumber: number, pageSize: number): Observable<PaginatedListOfLinkDto>;
+    createLink(command: CreateLinkCommand): Observable<LinkDto>;
     getLinkDetails(id: number): Observable<LinkDetailsDto>;
 }
 
@@ -89,6 +90,58 @@ export class LinksClient implements ILinksClient {
         return _observableOf(null as any);
     }
 
+    createLink(command: CreateLinkCommand): Observable<LinkDto> {
+        let url_ = this.baseUrl + "/api/Links";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateLink(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateLink(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<LinkDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<LinkDto>;
+        }));
+    }
+
+    protected processCreateLink(response: HttpResponseBase): Observable<LinkDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LinkDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
     getLinkDetails(id: number): Observable<LinkDetailsDto> {
         let url_ = this.baseUrl + "/api/Links/{id}";
         if (id === undefined || id === null)
@@ -142,7 +195,7 @@ export class LinksClient implements ILinksClient {
 }
 
 export interface IPublicLinksClient {
-    createLink(command: CreatePublicLinkCommand): Observable<LinkDto>;
+    createPublicLink(command: CreateLinkCommand): Observable<LinkDto>;
 }
 
 @Injectable({
@@ -158,7 +211,7 @@ export class PublicLinksClient implements IPublicLinksClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    createLink(command: CreatePublicLinkCommand): Observable<LinkDto> {
+    createPublicLink(command: CreateLinkCommand): Observable<LinkDto> {
         let url_ = this.baseUrl + "/api/PublicLinks";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -175,11 +228,11 @@ export class PublicLinksClient implements IPublicLinksClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateLink(response_);
+            return this.processCreatePublicLink(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateLink(response_ as any);
+                    return this.processCreatePublicLink(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<LinkDto>;
                 }
@@ -188,7 +241,7 @@ export class PublicLinksClient implements IPublicLinksClient {
         }));
     }
 
-    protected processCreateLink(response: HttpResponseBase): Observable<LinkDto> {
+    protected processCreatePublicLink(response: HttpResponseBase): Observable<LinkDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1081,10 +1134,10 @@ export interface ILinkReferrerDto {
     count?: number;
 }
 
-export class CreatePublicLinkCommand implements ICreatePublicLinkCommand {
+export class CreateLinkCommand implements ICreateLinkCommand {
     url?: string;
 
-    constructor(data?: ICreatePublicLinkCommand) {
+    constructor(data?: ICreateLinkCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1099,9 +1152,9 @@ export class CreatePublicLinkCommand implements ICreatePublicLinkCommand {
         }
     }
 
-    static fromJS(data: any): CreatePublicLinkCommand {
+    static fromJS(data: any): CreateLinkCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CreatePublicLinkCommand();
+        let result = new CreateLinkCommand();
         result.init(data);
         return result;
     }
@@ -1113,7 +1166,7 @@ export class CreatePublicLinkCommand implements ICreatePublicLinkCommand {
     }
 }
 
-export interface ICreatePublicLinkCommand {
+export interface ICreateLinkCommand {
     url?: string;
 }
 

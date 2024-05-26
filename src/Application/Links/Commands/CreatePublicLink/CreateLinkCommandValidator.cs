@@ -1,7 +1,7 @@
 ﻿namespace LinkIo.Application.Links.Commands.CreateLink;
-public class CreatePublicLinkCommandValidator : AbstractValidator<CreatePublicLinkCommand>
+public class CreateLinkCommandValidator : AbstractValidator<CreateLinkCommand>
 {
-    public CreatePublicLinkCommandValidator()
+    public CreateLinkCommandValidator()
     {
         RuleFor(v => v.Url)
             .NotNull()

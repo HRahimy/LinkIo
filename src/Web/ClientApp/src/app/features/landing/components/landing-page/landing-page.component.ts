@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { AuthService } from '@auth0/auth0-angular';
 import { Subscription } from 'rxjs';
 import {
-  CreatePublicLinkCommand,
+  CreateLinkCommand,
   PublicLinksClient,
 } from 'src/app/shared/services/api.service';
 
@@ -43,8 +43,8 @@ export class LandingPageComponent implements OnDestroy {
     if (this.urlInput.valid) {
       this.loading = true;
       this.links
-        .createLink(
-          new CreatePublicLinkCommand({
+        .createPublicLink(
+          new CreateLinkCommand({
             url: this.urlInput.getRawValue(),
           })
         )

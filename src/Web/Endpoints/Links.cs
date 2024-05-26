@@ -17,7 +17,8 @@ public class Links : EndpointGroupBase
         app.MapGroup(this)
             .RequireAuthorization()
             .MapGet(GetLinks)
-            .MapGet(GetLinkDetails, "{id}");
+            .MapGet(GetLinkDetails, "{id}")
+            .MapPost(CreateLink);
     }
 
     public async Task<PaginatedList<LinkDto>> GetLinks(ISender sender, [AsParameters] GetLinksQuery query)
@@ -28,5 +29,10 @@ public class Links : EndpointGroupBase
     public async Task<LinkDetailsDto> GetLinkDetails(ISender sender, int id)
     {
         return await sender.Send(new GetLinkDetailedQuery { Id = id });
+    }
+
+    public Task<LinkDto> CreateLink(ISender sender, CreateLinkCommand command)
+    {
+        return sender.Send(command);
     }
 }
