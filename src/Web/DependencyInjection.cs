@@ -30,6 +30,13 @@ public static class DependencyInjection
 
         services.AddEndpointsApiExplorer();
 
+        services.AddCors(o => o.AddPolicy("AllPolicy", builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        }));
+
         services.AddOpenApiDocument((configure, sp) =>
         {
             configure.Title = "LinkIo API";

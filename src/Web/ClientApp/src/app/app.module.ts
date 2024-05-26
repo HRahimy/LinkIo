@@ -12,6 +12,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAuth0 } from '@auth0/auth0-angular';
 import { authInterceptor } from './shared/interceptors/auth.interceptor';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { API_BASE_URL } from './shared/services/api.service';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,6 +42,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       },
     }),
     provideHttpClient(withInterceptors([authInterceptor])),
+    {
+      provide: API_BASE_URL,
+      useValue: environment.apiUrl,
+    },
   ],
   bootstrap: [AppComponent],
 })
