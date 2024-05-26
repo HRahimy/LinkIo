@@ -44,7 +44,7 @@ import { environment } from 'src/environments/environment';
     provideHttpClient(withInterceptors([authInterceptor])),
     {
       provide: API_BASE_URL,
-      useValue: environment.apiUrl,
+      useFactory: () => environment.apiUrl ?? undefined,
     },
   ],
   bootstrap: [AppComponent],
