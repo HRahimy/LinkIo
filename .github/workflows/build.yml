@@ -52,6 +52,15 @@ jobs:
       - name: Test solution
         run: dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~AcceptanceTests"
 
+      - name: dotnet publish
+        run: dotnet publish ./src/Web -c Release -o ./myapp
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: ./myapp
+
       - name: Create EF Core migrations bundle - Install tool-manifest
         if: ${{ inputs.build-artifacts == true }}
         run: |
