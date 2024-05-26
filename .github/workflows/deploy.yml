@@ -13,7 +13,7 @@ permissions:
 
 env:
   APP_LOCATION: src/Web/ClientApp # location of your client code
-  OUTPUT_LOCATION: src/Web/ClientApp/dist # location of client code build output
+  OUTPUT_LOCATION: dist # location of client code build output
 
 jobs:
   build_and_deploy_angular:
