@@ -142,6 +142,7 @@ jobs:
         run: |
           unzip -o ./efbundle.zip
           echo '{ "ConnectionStrings": { "DefaultConnection": "" } }' > appsettings.json
+          ls
           './efbundle.exe --connection "$SQL_CONNECTION_STRING" --verbose'
         env:
           SQL_CONNECTION_STRING: ${{secrets.SQL_CONNECTION_STRING}}
