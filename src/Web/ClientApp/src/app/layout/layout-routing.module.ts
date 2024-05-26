@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from './layout.component';
+import { authGuard } from '../shared/guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -9,6 +10,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
+        pathMatch: 'full',
         loadChildren: () =>
           import('../features/landing/landing.module').then(
             (m) => m.LandingModule
@@ -18,6 +20,7 @@ const routes: Routes = [
         path: 'links',
         loadChildren: () =>
           import('../features/links/links.module').then((m) => m.LinksModule),
+        canActivate: [authGuard],
       },
     ],
   },
