@@ -27,7 +27,6 @@ jobs:
           node-version: "20.x"
           cache: "npm"
           cache-dependency-path: src/Web/ClientApp/package-lock.json
-      - run: mkdir src/Web/ClientApp/src/environments
       - name: Add config file
         run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/src/environments/environment.ts'
         shell: bash
