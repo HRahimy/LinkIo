@@ -27,4 +27,10 @@
         <PackageReference Include="FluentAssertions" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Features\" />
+      <Folder Include="Pages\" />
+      <Folder Include="StepDefinitions\" />
+    </ItemGroup>
+
 </Project>

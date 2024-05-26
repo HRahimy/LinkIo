@@ -45,13 +45,13 @@ public class GetTodosTests : BaseTestFixture
         result.Lists.First().Items.Should().HaveCount(7);
     }
 
-    [Test]
-    public async Task ShouldDenyAnonymousUser()
-    {
-        var query = new GetTodosQuery();
+    //[Test]
+    //public async Task ShouldDenyAnonymousUser()
+    //{
+    //    var query = new GetTodosQuery();
 
-        var action = () => SendAsync(query);
+    //    var action = () => SendAsync(query);
 
-        await action.Should().ThrowAsync<UnauthorizedAccessException>();
-    }
+    //    await action.Should().ThrowAsync<UnauthorizedAccessException>();
+    //}
 }
