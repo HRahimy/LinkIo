@@ -10,7 +10,8 @@ public class LinkReferrerDto
     {
         public Mapping()
         {
-            CreateMap<LinkReferrer, LinkReferrerDto>();
+            CreateMap<LinkReferrer, LinkReferrerDto>()
+                .ForMember(x => x.Count, opt => opt.Ignore());
         }
     }
 }

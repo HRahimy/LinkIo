@@ -4,9 +4,7 @@ using LinkIo.Application.Common.Security;
 using LinkIo.Domain.Constants;
 using LinkIo.Infrastructure.Data;
 using LinkIo.Infrastructure.Data.Interceptors;
-using LinkIo.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -36,13 +34,7 @@ public static class DependencyInjection
 
         services.AddScoped<ApplicationDbContextInitialiser>();
 
-        services
-            .AddDefaultIdentity<ApplicationUser>()
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
-
         services.AddSingleton(TimeProvider.System);
-        services.AddTransient<IIdentityService, IdentityService>();
 
         var domain = $"https://{configuration["Auth0:Domain"]}/";
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
