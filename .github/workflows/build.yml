@@ -53,18 +53,6 @@ jobs:
     - name: Test solution
       run: dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~AcceptanceTests"
 
-    - name: Cache node modules
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-node-modules
-      with:
-        path: src/Web/ClientApp/node_modules
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**src/Web/ClientApp/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
-
     - name: Build Angular app
       if: ${{ inputs.build-artifacts == true }}
       run: |
