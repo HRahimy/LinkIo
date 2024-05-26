@@ -53,6 +53,7 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     name: Build and Deploy
+    needs: [build_angular]
     steps:
       - name: Download Angular app artifact
         uses: actions/download-artifact@v4
