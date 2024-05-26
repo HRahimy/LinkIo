@@ -25,8 +25,13 @@ jobs:
         with:
           submodules: true
       - run: mkdir src/Web/ClientApp/environments
-      - name: Add prod config file
+      - name: Add config file
         run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/environments/environment.ts'
+        shell: bash
+        env:
+          ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
+      - name: Add prod config file
+        run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/environments/environment.prod.ts'
         shell: bash
         env:
           ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
