@@ -25,7 +25,8 @@ jobs:
         with:
           submodules: true
       - name: Remove dev config file
-        run: rm environment.ts
+        run: ls -r
+        # run: rm environment.ts
         working-directory: src/Web/ClientApp/environments
       - name: Add prod config file
         run: echo ${{ secrets.ANGULAR_ENV }} | base64 -d > environment.ts
