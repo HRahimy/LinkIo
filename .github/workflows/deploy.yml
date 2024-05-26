@@ -27,17 +27,18 @@ jobs:
           node-version: "20.x"
           cache: "npm"
           cache-dependency-path: src/Web/ClientApp/package-lock.json
-      - run: mkdir src/Web/ClientApp/environments
+      - run: mkdir src/Web/ClientApp/src/environments
       - name: Add config file
-        run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/environments/environment.ts'
+        run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/src/environments/environment.ts'
         shell: bash
         env:
           ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
       - name: Add prod config file
-        run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/environments/environment.prod.ts'
+        run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/src/environments/environment.prod.ts'
         shell: bash
         env:
           ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
+
       - name: Build Angular app
         run: |
           npm install
