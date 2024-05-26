@@ -65,20 +65,19 @@ jobs:
           ${{ runner.os }}-build-
           ${{ runner.os }}-
 
-    - name: Build angular app
+    - name: Build Angular app
       if: ${{ inputs.build-artifacts == true }}
       run: |
-        dotnet publish --configuration Release --runtime win-x86 --self-contained --output ./publish
-        cd publish
-        zip -r ./publish.zip .
-      working-directory: ./src/Web/
+        npm install
+        ng build
+      working-directory: ./src/Web/ClientApp/
 
-    - name: Upload website artifact (website)
+    - name: Upload Angular app artifact
       if: ${{ inputs.build-artifacts == true }}
       uses: actions/upload-artifact@v4
       with:
-        name: website
-        path: ./src/Web/publish/publish.zip
+        name: angular_app
+        path: ./src/Web/ClientApp/dist/
         if-no-files-found: error
     
     - name: Create EF Core migrations bundle - Install tool-manifest
