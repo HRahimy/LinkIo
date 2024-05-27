@@ -65,6 +65,8 @@ jobs:
         shell: bash
         env:
           ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
+      - name: Add prod config file
+        run: cat src/Web/ClientApp/src/environments/environment.prod.ts
 
       - name: Build Angular app
         run: |
