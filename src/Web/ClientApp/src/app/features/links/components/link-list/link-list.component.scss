@@ -1,0 +1,26 @@
+.container {
+  height: 100vh;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .form {
+    height: 25%;
+  }
+  .list-container {
+    height: 65%;
+
+    .list {
+      height: 90%;
+      overflow: scroll;
+    }
+  }
+  .paginator {
+    height: 10%;
+  }
+}
+
+.container > * {
+  width: 75%;
+}
