@@ -5,13 +5,15 @@ namespace LinkIo.Application.Links.Commands.EditLink;
 public class EditLinkCommandValidator : AbstractValidator<EditLinkCommand>
 {
     private readonly IApplicationDbContext _context;
-    public EditLinkCommandValidator(IApplicationDbContext context)
+    private readonly IUser _user;
+    public EditLinkCommandValidator(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
 
         RuleFor(v => v.Id)
             .NotNull()
-            .MustAsync(ExistWithId).WithMessage("Link with this Id does not exist");
+            .MustAsync(ExistAndBelongsToUser).WithMessage("Link with given Id does not exist or doesnt belong to user");
 
         RuleFor(v => v.ShortUrlCode)
             .NotNull()
@@ -28,9 +30,9 @@ public class EditLinkCommandValidator : AbstractValidator<EditLinkCommand>
         return Regex.IsMatch(input, pattern);
     }
 
-    public async Task<bool> ExistWithId(int id, CancellationToken cancellationToken)
+    public async Task<bool> ExistAndBelongsToUser(int id, CancellationToken cancellationToken)
     {
-        return await _context.Links.AnyAsync(l => l.Id == id, cancellationToken);
+        return await _context.Links.AnyAsync(l => l.Id == id && l.CreatedBy == _user.Id);
     }
 
     public async Task<bool> BeUniqueCode(string code, CancellationToken cancellationToken)

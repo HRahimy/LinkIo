@@ -17,16 +17,20 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, PaginatedList
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IUser _user;
 
-    public GetLinksQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetLinksQueryHandler(IApplicationDbContext context, IMapper mapper, IUser user)
     {
         _context = context;
         _mapper = mapper;
+        _user = user;
     }
 
     public async Task<PaginatedList<LinkDto>> Handle(GetLinksQuery request, CancellationToken cancellationToken)
     {
+
         return await _context.Links
+            .Where(e => e.CreatedBy == _user.Id)
             .ProjectTo<LinkDto>(_mapper.ConfigurationProvider)
             .PaginatedListAsync(request.PageNumber, request.PageSize);
     }
