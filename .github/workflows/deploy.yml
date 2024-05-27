@@ -12,70 +12,34 @@ permissions:
   contents: read
 
 env:
-  APP_LOCATION: angular_app
+  ANGULAR_APP_LOCATION: angular_app
   OUTPUT_LOCATION: dist
   AZURE_WEBAPP_NAME: linkioback
   AZURE_WEBAPP_PACKAGE_PATH: "."
   DOTNET_VERSION: "8"
 
 jobs:
-  # build_angular:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       name: Checkout code
-  #     - name: Install Node & cache npm packages
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: "20.x"
-  #         cache: "npm"
-  #         cache-dependency-path: src/Web/ClientApp/package-lock.json
-  #     - name: Add config file
-  #       run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/src/environments/environment.ts'
-  #       shell: bash
-  #       env:
-  #         ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
-  #     - name: Add prod config file
-  #       run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/src/environments/environment.prod.ts'
-  #       shell: bash
-  #       env:
-  #         ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
-
-  #     - name: Build Angular app
-  #       run: |
-  #         npm install
-  #         npm run build
-  #       working-directory: ./src/Web/ClientApp/
-
-  #     - name: Upload Angular app artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ${{ env.APP_LOCATION }}
-  #         path: ./src/Web/ClientApp/dist/
-  #         if-no-files-found: error
-
-  # deploy_angular:
-  #   if: github.event_name == 'push'
-  #   runs-on: ubuntu-latest
-  #   name: Build and Deploy
-  #   needs: [build_angular]
-  #   steps:
-  #     - name: Download Angular app artifact
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: ${{ env.APP_LOCATION }}
-  #         path: ${{ env.APP_LOCATION }}
-  #     - name: Build And Deploy
-  #       uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9
-  #       env:
-  #         ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
-  #       with:
-  #         azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #         action: "upload"
-  #         app_location: ${{ env.APP_LOCATION }}
-  #         output_location: ${{ env.OUTPUT_LOCATION }}
-  #         skip_app_build: true
+  deploy_angular:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+    steps:
+      - name: Download Angular app artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ANGULAR_APP_LOCATION }}
+          path: ${{ env.ANGULAR_APP_LOCATION }}
+      - name: Build And Deploy
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9
+        env:
+          ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: ${{ env.ANGULAR_APP_LOCATION }}
+          output_location: ${{ env.OUTPUT_LOCATION }}
+          skip_app_build: true
 
   deploy_dotnet:
     runs-on: ubuntu-latest

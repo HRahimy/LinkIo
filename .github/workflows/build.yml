@@ -17,6 +17,9 @@ on:
         required: true
         default: false
 
+env:
+  ANGULAR_APP_LOCATION: angular_app
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -51,6 +54,30 @@ jobs:
 
       - name: Test solution
         run: dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~AcceptanceTests"
+
+      - name: Add config file
+        run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/src/environments/environment.ts'
+        shell: bash
+        env:
+          ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
+      - name: Add prod config file
+        run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/src/environments/environment.prod.ts'
+        shell: bash
+        env:
+          ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
+
+      - name: Build Angular app
+        run: |
+          npm install
+          npm run build -- --configuration production
+        working-directory: ./src/Web/ClientApp/
+
+      - name: Upload Angular app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ANGULAR_APP_LOCATION }}
+          path: ./src/Web/ClientApp/dist/
+          if-no-files-found: error
 
       - name: dotnet publish
         run: dotnet publish ./src/Web -c Release -o ./myapp

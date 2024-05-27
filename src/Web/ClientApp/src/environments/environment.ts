@@ -4,6 +4,7 @@
 
 export const environment: any = {
   production: false,
+  apiUrl: 'https://localhost:5001'
 };
 
 /*
