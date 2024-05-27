@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  EditLinkCommand,
   LinkDetailsDto,
   LinksClient,
 } from 'src/app/shared/services/api.service';
@@ -13,7 +15,7 @@ import {
 export class LinkDetailsComponent implements OnInit {
   id: string;
 
-  mode: 'view' | 'edit' = 'view';
+  editing: boolean = false;
 
   link: LinkDetailsDto;
 
@@ -21,6 +23,13 @@ export class LinkDetailsComponent implements OnInit {
   error: string = '';
 
   displayedColumns: string[] = ['url', 'count'];
+
+  codeInput = new FormControl('', [
+    Validators.minLength(15),
+    Validators.maxLength(15),
+    Validators.required,
+    Validators.pattern('^[a-zA-Z0-9]*$'),
+  ]);
 
   Object = Object;
 
@@ -37,6 +46,42 @@ export class LinkDetailsComponent implements OnInit {
     });
   }
 
+  switchMode() {
+    if (this.editing) {
+      this.codeInput.reset();
+    }
+    this.editing = !this.editing;
+  }
+
+  saveChange() {
+    if (this.codeInput.valid) {
+      this.loading = true;
+      this.codeInput.disable();
+      this.linksService
+        .editLink(
+          +this.id,
+          new EditLinkCommand({
+            id: +this.id,
+            shortUrlCode: this.codeInput.getRawValue(),
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.loading = false;
+            this.error = '';
+            this.switchMode();
+            this.fetch();
+          },
+          error: (err) => {
+            const parsedErr = JSON.parse(err.response);
+            this.error = parsedErr.title;
+            this.loading = false;
+            this.codeInput.enable();
+          },
+        });
+    }
+  }
+
   fetch() {
     this.loading = true;
     this.linksService.getLinkDetails(+this.id).subscribe({
@@ -44,11 +89,13 @@ export class LinkDetailsComponent implements OnInit {
         this.link = result;
         this.loading = false;
         this.error = '';
+        this.codeInput.enable();
       },
       error: (err) => {
         const parsedErr = JSON.parse(err.response);
         this.error = parsedErr.title;
         this.loading = false;
+        this.codeInput.enable();
       },
     });
   }

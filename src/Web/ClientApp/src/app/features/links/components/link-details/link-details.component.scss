@@ -14,7 +14,23 @@
   margin-top: 80px;
 }
 
+.form {
+  margin-top: 80px;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+
+.form > * {
+  width: 50%;
+}
+
 .header {
   position: absolute;
   top: 0;
+}
+
+.spacer {
+  flex: 1 1 auto;
 }

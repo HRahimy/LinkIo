@@ -3,9 +3,20 @@
     <button mat-icon-button color="primary" (click)="goBack()">
       <mat-icon>arrow_backward</mat-icon>
     </button>
-
     <span>Link Details</span>
+    <div class="spacer"></div>
+
+    @if(!editing) {
+    <button mat-icon-button color="primary" (click)="switchMode()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    } @else {
+    <button mat-icon-button color="warn" (click)="switchMode()">
+      <mat-icon>close</mat-icon>
+    </button>
+    }
   </mat-toolbar>
+  @if(!editing) {
   <div class="content">
     <h2>Details</h2>
     <mat-divider></mat-divider>
@@ -42,4 +53,46 @@
     </div>
     }
   </div>
+  } @else {
+  <div class="form">
+    <mat-form-field>
+      <mat-label>Code</mat-label>
+      <input
+        matInput
+        placeholder="https://example.link.com"
+        [formControl]="codeInput"
+        [maxlength]="15"
+        [minlength]="15"
+      />
+      @if(loading) {
+      <mat-spinner [diameter]="28" matSuffix></mat-spinner>
+      } @if(codeInput.hasError('required')) {
+      <mat-error>Value is required</mat-error>
+      } @else if(codeInput.hasError('minLength')) {
+      <mat-error>Code must be exactly 15 characters</mat-error>
+      } @else if(codeInput.hasError('maxLength')) {
+      <mat-error>Code must be exactly 15 characters</mat-error>
+      } @else if (codeInput.hasError('pattern')) {
+      <mat-error
+        >Code can only be a combination of numbers and letters</mat-error
+      >
+      } @if (codeInput.getRawValue().length === 0) {
+      <mat-hint>Enter a new code</mat-hint>
+      }
+    </mat-form-field>
+
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="loading || !codeInput.valid"
+      (click)="saveChange()"
+    >
+      Save
+    </button>
+
+    @if(!loading && error) {
+    <mat-error>{{ error }}</mat-error>
+    }
+  </div>
+  }
 </div>

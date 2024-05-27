@@ -13,6 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [LinkListComponent, LinkDetailsComponent],
@@ -28,6 +30,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatIconModule,
     ReactiveFormsModule,
     MatListModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class LinksModule {}
