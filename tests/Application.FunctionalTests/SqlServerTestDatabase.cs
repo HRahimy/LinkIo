@@ -20,7 +20,7 @@ public class SqlServerTestDatabase : ITestDatabase
             .AddEnvironmentVariables()
             .Build();
 
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetConnectionString("TestDefaultConnection");
 
         Guard.Against.Null(connectionString);
 

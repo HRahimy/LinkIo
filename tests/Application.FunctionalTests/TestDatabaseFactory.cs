@@ -1,13 +1,36 @@
-﻿namespace LinkIo.Application.FunctionalTests;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+
+namespace LinkIo.Application.FunctionalTests;
 
 public static class TestDatabaseFactory
 {
     public static async Task<ITestDatabase> CreateAsync()
     {
-        var database = new TestcontainersTestDatabase();
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .AddEnvironmentVariables()
+            .Build();
 
-        await database.InitialiseAsync();
+        var connectionString = configuration.GetConnectionString("TestDefaultConnection");
 
-        return database;
+        if (!connectionString.IsNullOrEmpty())
+        {
+
+            var database = new SqlServerTestDatabase();
+
+            await database.InitialiseAsync();
+
+            return database;
+        }
+        else
+        {
+            var database = new TestcontainersTestDatabase();
+
+            await database.InitialiseAsync();
+
+            return database;
+        }
+
     }
 }
