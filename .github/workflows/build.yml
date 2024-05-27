@@ -59,17 +59,17 @@ jobs:
         run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/src/environments/environment.ts'
         shell: bash
         env:
-          ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
+          ANGULAR_ENV: ${{ secrets.ANGULAR_ENV }}
       - name: Add prod config file
         run: 'echo "$ANGULAR_ENV" | base64 -d > src/Web/ClientApp/src/environments/environment.prod.ts'
         shell: bash
         env:
-          ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
+          ANGULAR_ENV: ${{ secrets.ANGULAR_ENV }}
 
       - run: 'echo "$ANGULAR_ENV" | base64 -d'
         shell: bash
         env:
-          ANGULAR_ENV: ${{secrets.ANGULAR_ENV}}
+          ANGULAR_ENV: ${{ secrets.ANGULAR_ENV }}
       - run: cat src/Web/ClientApp/src/environments/environment.prod.ts
 
       - name: Build Angular app
