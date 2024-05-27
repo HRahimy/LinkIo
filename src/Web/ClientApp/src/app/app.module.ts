@@ -31,11 +31,11 @@ import { environment } from 'src/environments/environment';
   ],
   providers: [
     provideAuth0({
-      domain: 'ngbridge.eu.auth0.com',
-      clientId: '5YkZLVGjzit5ReUsIcCURgE6uvP7hTCm',
+      domain: environment.auth0Domain,
+      clientId: environment.auth0ClientId,
       authorizationParams: {
         redirect_uri: window.location.origin,
-        audience: 'https://linkio.com',
+        audience: environment.auth0Audience,
         scope: 'read:current_user',
       },
     }),

@@ -4,7 +4,10 @@
 
 export const environment: any = {
   production: false,
-  apiUrl: 'https://localhost:5001'
+  apiUrl: 'https://localhost:5001',
+  auth0Domain: 'ngbridge.eu.auth0.com',
+  auth0ClientId: '5YkZLVGjzit5ReUsIcCURgE6uvP7hTCm',
+  auth0Audience: 'https://linkio.com',
 };
 
 /*
