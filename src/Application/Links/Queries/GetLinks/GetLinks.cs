@@ -28,7 +28,6 @@ public class GetLinksQueryHandler : IRequestHandler<GetLinksQuery, PaginatedList
 
     public async Task<PaginatedList<LinkDto>> Handle(GetLinksQuery request, CancellationToken cancellationToken)
     {
-
         return await _context.Links
             .Where(e => e.CreatedBy == _user.Id)
             .ProjectTo<LinkDto>(_mapper.ConfigurationProvider)

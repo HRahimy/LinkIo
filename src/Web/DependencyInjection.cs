@@ -3,6 +3,8 @@ using LinkIo.Application.Common.Interfaces;
 using LinkIo.Infrastructure.Data;
 using LinkIo.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Generation.Processors.Security;
+using NSwag;
 
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -37,11 +39,26 @@ public static class DependencyInjection
                    .AllowAnyHeader();
         }));
 
-        services.AddOpenApiDocument((configure, sp) =>
-        {
-            configure.Title = "LinkIo API";
-
-        });
+        services.AddOpenApiDocument(
+            (configure, sp) =>
+            {
+                configure.Title = "LinkIo API";
+                configure.AddSecurity(
+                    "JWT",
+                    Enumerable.Empty<string>(),
+                    new OpenApiSecurityScheme
+                    {
+                        Type = OpenApiSecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        In = OpenApiSecurityApiKeyLocation.Header,
+                        Description = "Type into the textbox: Bearer {your JWT token}."
+                    }
+                );
+                configure.OperationProcessors.Add(
+                    new AspNetCoreOperationSecurityScopeProcessor("JWT")
+                );
+            }
+        );
 
         return services;
     }
