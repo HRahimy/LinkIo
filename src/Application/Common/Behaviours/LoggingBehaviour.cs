@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LinkIo.Application.Common.Behaviours;
 
-public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where TRequest : notnull
+public class LoggingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     private readonly ILogger _logger;
     private readonly IUser _user;
@@ -15,7 +15,7 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
         _user = user;
     }
 
-    public Task Process(TRequest request, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var requestName = typeof(TRequest).Name;
         var userId = _user.Id ?? string.Empty;
@@ -29,6 +29,6 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
         _logger.LogInformation("LinkIo Request: {Name} {@UserId} {@Request}",
             requestName, userId, request);
 
-        return Task.CompletedTask;
+        return await next();
     }
 }

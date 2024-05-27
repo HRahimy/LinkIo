@@ -1,9 +1,10 @@
-import { Component, Inject } from '@angular/core';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AuthService } from '@auth0/auth0-angular';
 import {
   API_BASE_URL,
   CreateLinkCommand,
+  LinkDto,
   PublicLinksClient,
 } from 'src/app/shared/services/api.service';
 import { urlValidator } from 'src/app/shared/validators/valid-url.validator';
@@ -21,6 +22,8 @@ export class LinkGeneratorComponent {
 
   loading: boolean = false;
   error: string = '';
+
+  @Output() linkGenerated: EventEmitter<LinkDto> = new EventEmitter();
 
   private baseUrl?: string;
 
@@ -52,6 +55,7 @@ export class LinkGeneratorComponent {
             this.loading = false;
             this.urlInput.reset('');
             this.urlInput.enable();
+            this.linkGenerated.emit(result);
           },
           error: (err) => {
             const parsedErr = JSON.parse(err.response);

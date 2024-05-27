@@ -13,6 +13,7 @@ import { authInterceptor } from './shared/interceptors/auth.interceptor';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { API_BASE_URL } from './shared/services/api.service';
 import { environment } from 'src/environments/environment';
+import { authHttpInterceptorFn } from '@auth0/auth0-angular';
 
 @NgModule({
   declarations: [AppComponent],
@@ -38,8 +39,23 @@ import { environment } from 'src/environments/environment';
         audience: environment.auth0Audience,
         scope: 'read:current_user',
       },
+      httpInterceptor: {
+        allowedList: [
+          {
+            uri: `${environment.apiUrl ?? window.location.origin}/*`,
+            tokenOptions: {
+              authorizationParams: {
+                audience: environment.auth0Audience,
+                scope: 'read:current_user',
+              },
+            },
+          },
+        ],
+      },
     }),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(
+      withInterceptors([authInterceptor, authHttpInterceptorFn])
+    ),
     {
       provide: API_BASE_URL,
       useFactory: () => environment.apiUrl ?? undefined,
