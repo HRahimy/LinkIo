@@ -1,44 +1,7 @@
 <div class="container">
   <h1>Welcome to LinkIo</h1>
-  <mat-form-field>
-    <mat-label>URL</mat-label>
-    <input
-      matInput
-      placeholder="https://example.link.com"
-      [formControl]="urlInput"
-    />
-    @if(loading) {
-    <mat-spinner [diameter]="28" matSuffix></mat-spinner>
-    } @if(urlInput.hasError('required')) {
-    <mat-error>URL is <strong>required</strong></mat-error>
-    } @else if(urlInput.hasError('invalidUrl')) {
-    <mat-error>Invalid URL</mat-error>
-    } @if (urlInput.getRawValue().length === 0) {
-    <mat-hint>Enter a URL to get short link</mat-hint>
-    }
-  </mat-form-field>
 
-  <button
-    mat-stroked-button
-    color="primary"
-    [disabled]="loading || !urlInput.valid"
-    (click)="submit()"
-  >
-    Get Link
-  </button>
-
-  @if (!loading && error) {
-  <mat-error>{{ error }}</mat-error>
-  } @if (shortUrl) {
-  <mat-hint>Success!</mat-hint>
-  <div class="code-container">
-    <pre>{{ shortUrl }}</pre>
-    <button mat-icon-button (click)="copyUrl()" matTooltip="Copy to clipboard">
-      <mat-icon>content_copy</mat-icon>
-    </button>
-  </div>
-  }
-
+  <app-link-generator></app-link-generator>
   <hr />
 
   <button mat-flat-button color="primary" (click)="signIn()">
