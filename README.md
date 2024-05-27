@@ -7,7 +7,7 @@ The following is a set of prerequisites to run the application locally
 - Windows OS
 - Auth0 API and Client configured to work with
 - Docker Desktop
-- [MS SQL Database running in Docker container](#SQL_Database)
+- [MS SQL Database running in Docker container](#sql-database)
 
 ### Auth0 Configuration
 
@@ -31,7 +31,7 @@ To use an actual SQL database for the Integration tests, a connection string mus
 
 Alternatively, you can provide the connection string via environment variables. The environment variable must be named `ConnectionStrings__TestDefaultConnection`.
 
-Assuming you're using the database setup described in the [Prerequisites](#Prerequisites), you can provide the following connection string value
+Assuming you're using the database setup described in the [Prerequisites](#sql-database), you can provide the following connection string value
 
 ```
 Server=127.0.0.1,1433;Database=LinkIoTestDb;User Id=SA;Password=Administrator1@;TrustServerCertificate=True;MultipleActiveResultSets=true
