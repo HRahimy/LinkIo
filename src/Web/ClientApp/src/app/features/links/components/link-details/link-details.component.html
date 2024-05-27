@@ -1,1 +1,45 @@
-<p>link-details works!</p>
+<div class="container">
+  <mat-toolbar class="header">
+    <button mat-icon-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_backward</mat-icon>
+    </button>
+
+    <span>Link Details</span>
+  </mat-toolbar>
+  <div class="content">
+    <h2>Details</h2>
+    <mat-divider></mat-divider>
+    @if(link) {
+    <mat-list>
+      @for(key of Object.keys(this.link); track key) { @if(key !== 'referrers')
+      {
+      <mat-list-item>
+        <strong>{{ key }}:</strong> {{ link[key] }}
+      </mat-list-item>
+      } }
+    </mat-list>
+    }
+
+    <h2>Referrers</h2>
+    <mat-divider></mat-divider>
+
+    @if(link && link.referrers) {
+    <div>
+      <table mat-table [dataSource]="link.referrers">
+        <ng-container matColumnDef="url">
+          <th mat-header-cell *matHeaderCellDef>URL</th>
+          <td mat-cell *matCellDef="let element">{{ element.url }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="count">
+          <th mat-header-cell *matHeaderCellDef>Count</th>
+          <td mat-cell *matCellDef="let element">{{ element.count }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+    }
+  </div>
+</div>

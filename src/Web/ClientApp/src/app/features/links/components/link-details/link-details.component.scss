@@ -1,0 +1,20 @@
+.container {
+  height: 100vh;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+
+.container > * {
+  width: 75%;
+}
+
+.content {
+  margin-top: 80px;
+}
+
+.header {
+  position: absolute;
+  top: 0;
+}

@@ -10,6 +10,15 @@
   <div class="list-container">
     <mat-toolbar>
       <span>Your Links</span>
+      <div class="spacer"></div>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="logout()"
+        aria-label="Sign Out"
+      >
+        <mat-icon>logout</mat-icon>
+      </button>
     </mat-toolbar>
     @if(!loading && !error) {
     <div class="list">

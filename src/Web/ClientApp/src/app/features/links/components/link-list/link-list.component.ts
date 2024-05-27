@@ -1,6 +1,7 @@
 import { Component, Inject, InjectionToken, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
+import { AuthService } from '@auth0/auth0-angular';
 import {
   API_BASE_URL,
   LinkDto,
@@ -29,6 +30,7 @@ export class LinkListComponent implements OnInit {
   constructor(
     private linksService: LinksClient,
     private router: Router,
+    private authService: AuthService,
     @Inject(API_BASE_URL) baseUrl?: string
   ) {
     this.baseUrl = baseUrl;
@@ -74,5 +76,17 @@ export class LinkListComponent implements OnInit {
 
   goToDetails(link: LinkDto) {
     this.router.navigate(['/links', link.id]);
+  }
+
+  logout() {
+    this.authService
+      .logout({
+        logoutParams: {
+          returnTo: window.location.origin,
+        },
+      })
+      .subscribe({
+        next: (value) => {},
+      });
   }
 }
